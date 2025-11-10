@@ -13,7 +13,8 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"build": "bun build public/index.ts --outfile dist/public.js"
+		"build": "tsc && tsc-alias",
+		"build-public": "bun build public/index.ts --outfile dist/public.js"
 	},
 	"dependencies": {
 		"@wxn0brp/flanker-ui": "^0.4.3"
