@@ -5,7 +5,7 @@ import { WolfMenuBody } from "./html";
 export class WolfMenu {
     constructor(
         public _commands: CommandMap,
-        public _element: HTMLDivElement,
+        public _element: HTMLDivElement
     ) {
         this._body = new WolfMenuBody(this._element);
         this._element.style.display = "none";
@@ -21,6 +21,8 @@ export class WolfMenu {
         name: "Cancel",
         action: () => this._element.style.display = "none"
     }
+    _selectedCommands: Command[];
+    _logFn = console.log
 
     startCommand = "start";
     init() {
@@ -31,45 +33,38 @@ export class WolfMenu {
             this._body.clearSelected();
             this._body.select(this.getDirection());
         });
-        this._start();
-    }
-
-    _start(commandName = this.startCommand) {
-        document.addEventListener("click", (e) => {
-            this._x = e.clientX;
-            this._y = e.clientY;
-            this._open(commandName);
-        }, { once: true });
+        document.addEventListener("click", () => {
+            if (this._active) this.__open();
+            else this._open();
+        });
     }
 
     _open(commandName: string = this.startCommand) {
-        const commands = this._commands[commandName];
+        this._selectedCommands = this._commands[commandName];
         this._element.style.display = "";
         this._element.style.top = this._y + "px";
         this._element.style.left = this._x + "px";
         this._body.clearSelected();
-        this._body.setNames(commands, this._cancelCommand);
+        this._body.setNames(this._selectedCommands, this._cancelCommand);
         this._active = true;
         this._setStart();
         this._body.select(this.getDirection());
+    }
 
-        document.addEventListener("click", () => {
-            this._element.style.display = "none";
-            this._active = false;
-            const direction = this.getDirection();
-            if (direction === 8) return this._start();
-
-            const command = commands[direction];
-            if ("go" in command) {
-                this._open(command.go);
-                return
-            }
-            if ("action" in command)
-                command.action();
-            else
-                console.error("Unknown command type", command);
-            this._start();
-        }, { once: true });
+    __open() {
+        this._element.style.display = "none";
+        this._active = false;
+        const direction = this.getDirection();
+        const command = direction === 8 ? this._cancelCommand : this._selectedCommands[direction];
+        if (!command) return;
+        if ("go" in command) {
+            this._open(command.go);
+            return
+        }
+        if ("action" in command)
+            command.action();
+        else
+            this._logFn("Unknown command type", command);
     }
 
     getDirection() {
