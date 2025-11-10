@@ -1,0 +1,11 @@
+{
+	"cmd": "tsc --noEmit && bun build src/index.ts --outdir dist",
+	"watch": [
+		"src"
+	],
+	"server": 14593,
+	"restart_cmd": "clear",
+	"events": {
+		"rs": "clear"
+	}
+}
