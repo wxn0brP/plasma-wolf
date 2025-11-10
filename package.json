@@ -21,6 +21,7 @@
 	},
 	"devDependencies": {
 		"@types/bun": "*",
+		"tsc-alias": "*",
 		"typescript": "*"
 	},
 	"files": [
