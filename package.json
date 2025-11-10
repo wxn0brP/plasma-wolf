@@ -14,7 +14,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc && tsc-alias",
-		"build-public": "bun build public/index.ts --outfile dist/public.js"
+		"build-public": "bun build public/index.ts --outfile public/index.js"
 	},
 	"dependencies": {
 		"@wxn0brp/flanker-ui": "^0.4.3"
