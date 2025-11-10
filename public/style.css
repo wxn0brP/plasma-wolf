@@ -3,7 +3,7 @@ body {
     color: white;
 }
 
-#wolf {
+.wolf {
     --top: 50vh;
     --left: 50vw;
 

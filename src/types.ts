@@ -3,11 +3,11 @@ export interface CommandBase {
 };
 
 export interface ActionCommand extends CommandBase {
-    action?: () => void;
+    action: () => void;
 }
 
 export interface GoCommand extends CommandBase {
-    go?: string;
+    go: string;
 }
 
 export type Command = ActionCommand | GoCommand;

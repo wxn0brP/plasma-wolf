@@ -1,60 +1,83 @@
-import "@wxn0brp/flanker-ui/html";
-import { WolfMenu } from "./lib";
-import { CommandMap } from "./types";
+import { Command, CommandMap } from "./types";
+import { getDirection } from "./direction";
+import { WolfMenuBody } from "./html";
 
-export const commands: CommandMap = {
-    start: [
-        { name: "Go to the forest", go: "forest" },
-        { name: "Enter the castle", go: "castle" },
-        { name: "Return to the village", go: "village" },
-        { name: "Explore the cave", go: "cave" },
-        { name: "Take a look around", action: () => alert("Take a look around... it's pretty quiet.") },
-        { name: "Start again", action: () => alert("Let's start again from the beginning.") },
-        { name: "Check your inventory", action: () => alert("Make sure you have only your map and a flashlight.") },
-        { name: "Finish", action: () => alert("You're done! Congratulations on finishing the adventure!") },
-    ],
-    forest: [
-        { name: "Gather berries", action: () => alert("You gathered some delicious berries.") },
-        { name: "Take a rest", action: () => alert("You took a short rest.") },
-        { name: "Find a stream", action: () => alert("You found a stream with cool, clear water.") },
-        { name: "Go deeper in the forest", go: "deep_forest" },
-        { name: "Return to the start", go: "start" },
-        { name: "Light a fire", action: () => alert("You lit a fire and felt warm.") },
-        { name: "Listen to the forest sounds", action: () => alert("You listened carefully and heard some soothing sounds.") },
-        { name: "Take a break", action: () => alert("You took a short break.") },
-    ],
-    castle: [
-        { name: "Enter the throne room", go: "throne_room" },
-        { name: "Talk to the guard", action: () => alert("The guard says: 'You cannot pass without permission.'") },
-        { name: "Explore the garden", action: () => alert("The garden is empty and quiet.") },
-        { name: "Enter the armory", go: "armory" },
-        { name: "Enter the dungeon", go: "dungeon" },
-        { name: "Return to the start", go: "start" },
-        { name: "Visit the library", go: "library" },
-        { name: "Use the lavatory", action: () => alert("You hear the sound of running water.") },
-    ],
-    village: [
-        { name: "Talk to the blacksmith", action: () => alert("Blacksmith: 'How can I help you with the new month?'") },
-        { name: "Enter the tavern", go: "tavern" },
-        { name: "Visit the shopkeeper", action: () => alert("Shopkeeper: 'Welcome to my humble shop.'") },
-        { name: "Talk to the children", action: () => alert("Children: 'We're so happy to see you!'") },
-        { name: "Feed the beggar", action: () => alert("The beggar thanks you for the food.") },
-        { name: "Return to the start", go: "start" },
-        { name: "Get a drink", action: () => alert("You take a refreshing drink.") },
-        { name: "Take a walk at night", go: "forest" },
-    ],
-    cave: [
-        { name: "Go deeper", go: "deep_cave" },
-        { name: "Write on the wall", action: () => alert("You write an old rhyme on the wall.") },
-        { name: "Light a match", action: () => alert("The match flickers and casts a small, warm glow.") },
-        { name: "Shout", action: () => alert("Your voice echoes off the walls... and something else.") },
-        { name: "Return to the start", go: "start" },
-        { name: "Bang on the pipe", action: () => alert("The pipe makes a loud, hollow clang.") },
-        { name: "Repeat after the echo", action: () => alert("The echo repeats your words back to you.") },
-        { name: "Take a break at the entrance", action: () => alert("You take a short break at the entrance.") },
-    ],
-};
+export class WolfMenu {
+    constructor(
+        public _commands: CommandMap,
+        public _element: HTMLDivElement,
+    ) {
+        this._body = new WolfMenuBody(this._element);
+        this._element.style.display = "none";
+    }
 
-const wolf = qs("#wolf");
-const menu = new WolfMenu(commands, wolf);
-menu.init();
+    _body: WolfMenuBody;
+    _x = 0;
+    _y = 0;
+    _lastX = 0;
+    _lastY = 0;
+    _active = false;
+    _cancelCommand: Command = {
+        name: "Cancel",
+        action: () => this._element.style.display = "none"
+    }
+
+    startCommand = "start";
+    init() {
+        document.addEventListener("mousemove", (e) => {
+            this._x = e.clientX;
+            this._y = e.clientY;
+            if (!this._active) return;
+            this._body.clearSelected();
+            this._body.select(this.getDirection());
+        });
+        this._start();
+    }
+
+    _start(commandName = this.startCommand) {
+        document.addEventListener("click", (e) => {
+            this._x = e.clientX;
+            this._y = e.clientY;
+            this._open(commandName);
+        }, { once: true });
+    }
+
+    _open(commandName: string = this.startCommand) {
+        const commands = this._commands[commandName];
+        this._element.style.display = "";
+        this._element.style.top = this._y + "px";
+        this._element.style.left = this._x + "px";
+        this._body.clearSelected();
+        this._body.setNames(commands, this._cancelCommand);
+        this._active = true;
+        this._setStart();
+        this._body.select(this.getDirection());
+
+        document.addEventListener("click", () => {
+            this._element.style.display = "none";
+            this._active = false;
+            const direction = this.getDirection();
+            if (direction === 8) return this._start();
+
+            const command = commands[direction];
+            if ("go" in command) {
+                this._open(command.go);
+                return
+            }
+            if ("action" in command)
+                command.action();
+            else
+                console.error("Unknown command type", command);
+            this._start();
+        }, { once: true });
+    }
+
+    getDirection() {
+        return getDirection(this._x, this._y, this._lastX, this._lastY);
+    }
+
+    _setStart(x = this._x, y = this._y) {
+        this._lastX = x;
+        this._lastY = y;
+    }
+}

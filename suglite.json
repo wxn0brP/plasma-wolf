@@ -1,6 +1,7 @@
 {
-	"cmd": "tsc --noEmit && bun build src/index.ts --outdir dist",
+	"cmd": "tsc --noEmit && bun run build",
 	"watch": [
+		"public/index.ts",
 		"src"
 	],
 	"server": 14593,
