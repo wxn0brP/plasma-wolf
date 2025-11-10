@@ -1,12 +1,11 @@
 body {
-    background-color: transparent;
+    background-color: #111;
     color: white;
 }
 
 .wolf {
     --top: 50vh;
     --left: 50vw;
-    background-color: rgba(17, 17, 17, 0.7);
 
     top: var(--top);
     left: var(--left);
