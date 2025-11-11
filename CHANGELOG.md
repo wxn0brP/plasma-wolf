@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.2...v0.0.3) (2025-11-11)
+
+
+### Features
+
+* distance select ([5e4645a](https://github.com/wxn0brP/plasma-wolf/commit/5e4645ad6296c01244eaed1ff7fb5f08c6a9e0cd))
+* event emiter ([f231a6c](https://github.com/wxn0brP/plasma-wolf/commit/f231a6ccf225c17eb8e7b614455c494d8f81a547))
+* update demo ([a45f25b](https://github.com/wxn0brP/plasma-wolf/commit/a45f25becaf9cde4aa2751c17d6a35efcba35896))
+* update events & distance select ([09ca8af](https://github.com/wxn0brP/plasma-wolf/commit/09ca8af59a1efe617f72f700280d3d68dc8ee93b))
+
 ### 0.0.2 (2025-11-10)
 
 
