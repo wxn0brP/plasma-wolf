@@ -27,3 +27,9 @@ export function getDirection(x: number, y: number, startX: number, startY: numbe
 
     return 8; // fallback
 }
+
+export function getDistance(x: number, y: number, startX: number, startY: number): number {
+    const dx = x - startX;
+    const dy = y - startY;
+    return Math.sqrt(dx * dx + dy * dy);
+}

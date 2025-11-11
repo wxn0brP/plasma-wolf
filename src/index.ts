@@ -1,5 +1,5 @@
 import { Command, CommandMap } from "./types";
-import { getDirection } from "./direction";
+import { getDirection, getDistance } from "./direction";
 import { WolfMenuBody } from "./html";
 
 export class WolfMenu {
@@ -25,13 +25,19 @@ export class WolfMenu {
     _logFn = console.log
 
     startCommand = "start";
-    init() {
+    init(distanceEnable = true) {
         document.addEventListener("mousemove", (e) => {
             this._x = e.clientX;
             this._y = e.clientY;
             if (!this._active) return;
+
             this._body.clearSelected();
             this._body.select(this.getDirection());
+
+            if (!distanceEnable) return;
+            const distance = getDistance(this._x, this._y, this._lastX, this._lastY);
+            if (distance > this._element.clientWidth)
+                this.__open();
         });
         document.addEventListener("click", () => {
             if (this._active) this.__open();
