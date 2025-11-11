@@ -1,6 +1,7 @@
-import { Command, CommandMap } from "./types";
+import { Command, CommandMap, WolfMenuEvents } from "./types";
 import { getDirection, getDistance } from "./direction";
 import { WolfMenuBody } from "./html";
+import { VEE } from "@wxn0brp/event-emitter";
 
 export class WolfMenu {
     constructor(
@@ -22,7 +23,8 @@ export class WolfMenu {
         action: () => this._element.style.display = "none"
     }
     _selectedCommands: Command[];
-    _logFn = console.log
+    _logFn = console.log;
+    emitter = new VEE<WolfMenuEvents>();
 
     startCommand = "start";
     init(distanceEnable = true) {
@@ -32,10 +34,12 @@ export class WolfMenu {
             if (!this._active) return;
 
             this._body.clearSelected();
-            this._body.select(this.getDirection());
+            const direction = this.getDirection();
+            this._body.select(direction);
 
             if (!distanceEnable) return;
             const distance = getDistance(this._x, this._y, this._lastX, this._lastY);
+            this.emitter.emit("distance", distance, direction);
             if (distance > this._element.clientWidth)
                 this.__open();
         });
@@ -43,6 +47,8 @@ export class WolfMenu {
             if (this._active) this.__open();
             else this._open();
         });
+
+        this.emitter.emit("initialized");
     }
 
     _open(commandName: string = this.startCommand) {
@@ -55,6 +61,8 @@ export class WolfMenu {
         this._active = true;
         this._setStart();
         this._body.select(this.getDirection());
+
+        this.emitter.emit("menuOpened", commandName);
     }
 
     __open() {
@@ -62,13 +70,20 @@ export class WolfMenu {
         this._active = false;
         const direction = this.getDirection();
         const command = direction === 8 ? this._cancelCommand : this._selectedCommands[direction];
+
+        this.emitter.emit("menuClosed");
         if (!command) return;
+
+        this.emitter.emit("commandSelected", command);
+
         if ("go" in command) {
             this._open(command.go);
             return
         }
-        if ("action" in command)
+        if ("action" in command) {
             command.action();
+            this.emitter.emit("commandExecuted", command);
+        }
         else
             this._logFn("Unknown command type", command);
     }

@@ -12,3 +12,12 @@ export interface GoCommand extends CommandBase {
 
 export type Command = ActionCommand | GoCommand;
 export type CommandMap = Record<string, Command[]>;
+
+export type WolfMenuEvents = {
+    menuOpened: (commandName: string) => void;
+    menuClosed: () => void;
+    commandSelected: (command: Command) => void;
+    commandExecuted: (command: Command) => void;
+    initialized: () => void;
+    distance: (distance: number, direction: number) => void;
+}
