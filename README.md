@@ -4,7 +4,7 @@ A radial context menu library that appears with a click and allows direction-bas
 
 ## Features
 
-- **Radial Menu Interface**: Commands are arranged in 8 directions around a center point
+- **Radial Menu Interface**: Commands are arranged in directions around a center point
 - **Direction-Based Navigation**: Move your mouse in a specific direction to highlight commands
 - **Context-Aware Menus**: Different menu states with different available commands
 - **Flexible Command System**: Support for both action commands and navigation commands

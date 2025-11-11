@@ -11,14 +11,20 @@ body {
     left: var(--left);
     position: fixed;
 
-    transform: translate(-50%, -50%);
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
 }
 
-.wolf div {
+.wolf-menu-items {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.wolf-menu-item {
     width: 100px;
     height: 100px;
     display: flex;
@@ -27,8 +33,15 @@ body {
     cursor: pointer;
     word-break: keep-all;
     text-align: center;
+
+    position: absolute;
+    transform: translate(-50%, -50%);
 }
 
-.wolf .selected {
-    border: 1px solid rgba(128, 0, 255, var(--alpha, 0));
+.wolf-menu-item.selected {
+    color: rgba(128, 0, 255, var(--alpha, 0));
+}
+
+.wolf-menu-item.wolf-menu-item-cancel.selected {
+    color: #800019;
 }

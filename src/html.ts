@@ -1,24 +1,34 @@
+import { calculatePositions } from "./utils";
 import { Command } from "./types";
 
-const order = [7, 0, 1, 6, 8, 2, 5, 4, 3];
-
 export class WolfMenuBody {
-    constructor(private parent: HTMLElement) {
+    constructor(private parent: HTMLElement, public radius = 150) {
         this.parent.innerHTML = "";
-        this.body = this._genBody();
     }
-    body: HTMLDivElement[];
+    body: HTMLDivElement[] = [];
 
-    _genBody() {
-        const out: HTMLDivElement[] = [];
-        for (let i = 0; i < order.length; i++) {
-            const outIndex = order[i];
+    genBody(steps: number) {
+        this.parent.innerHTML = "";
+        this.body = [];
 
+        const positions = calculatePositions(this.radius, steps);
+
+        for (let i = 0; i < steps; i++) {
             const div = document.createElement("div");
+            div.classList.add("wolf-menu-item");
+            div.style.left = `${positions[i * 2]}px`;
+            div.style.top = `${positions[i * 2 + 1]}px`;
             this.parent.appendChild(div);
-            out[outIndex] = div;
+            this.body.push(div);
         }
-        return out;
+
+        const div = document.createElement("div");
+        div.classList.add("wolf-menu-item");
+        div.classList.add("wolf-menu-item-cancel");
+        div.style.left = "0";
+        div.style.top = "0";
+        this.parent.appendChild(div);
+        this.body.push(div);
     }
 
     clearSelected() {
