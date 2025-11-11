@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.3...v0.0.4) (2025-11-11)
+
+
+### Features
+
+* custom menu items ([d9b4059](https://github.com/wxn0brP/plasma-wolf/commit/d9b4059ee9319d9931d08d7f3b0e87505e6bd296))
+
 ### [0.0.3](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.2...v0.0.3) (2025-11-11)
 
 
