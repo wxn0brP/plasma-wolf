@@ -25,9 +25,10 @@ export class WolfMenu {
     _selectedCommands: Command[];
     _logFn = console.log;
     emitter = new VEE<WolfMenuEvents>();
+    distanceAccept = true;
 
     startCommand = "start";
-    init(distanceEnable = true) {
+    init() {
         document.addEventListener("mousemove", (e) => {
             this._x = e.clientX;
             this._y = e.clientY;
@@ -37,9 +38,10 @@ export class WolfMenu {
             const direction = this.getDirection();
             this._body.select(direction);
 
-            if (!distanceEnable) return;
             const distance = getDistance(this._x, this._y, this._lastX, this._lastY);
             this.emitter.emit("distance", distance, direction);
+
+            if (!this.distanceAccept) return;
             if (distance > this._element.clientWidth)
                 this.__open();
         });
