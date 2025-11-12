@@ -1,9 +1,9 @@
-import { MousePos } from "./types";
+export class Delta {
+    constructor(public dx: number, public dy: number) { }
+}
 
-export function getDirection({ x, y, sx, sy }: MousePos, steps: number, threshold = 55): number {
-    const dx = x - sx;
-    const dy = y - sy;
-
+export function getDirection(delta: Delta, steps: number, threshold = 55): number {
+    const { dx, dy } = delta;
     if (dx === 0 && dy === 0) return steps; // no movement
 
     const absDx = Math.abs(dx);
@@ -11,18 +11,15 @@ export function getDirection({ x, y, sx, sy }: MousePos, steps: number, threshol
 
     if (absDx < threshold && absDy < threshold) return steps; // no movement
 
-    const angle = getAngle({ x, y, sx, sy });
+    const angle = getAngle(delta);
     const correction = 360 / steps / 2;
     const adjustedAngle = angle + 90 + correction;
 
     return getSector(adjustedAngle, steps);
 }
 
-function getAngle({ x, y, sx, sy }: MousePos): number {
-    const deltaX = x - sx;
-    const deltaY = y - sy;
-
-    let angle = Math.atan2(deltaY, deltaX);
+function getAngle(delta: Delta): number {
+    let angle = Math.atan2(delta.dy, delta.dx);
     angle = angle * (180 / Math.PI);
     if (angle < 0) angle += 360;
 
@@ -36,9 +33,7 @@ function getSector(angle: number, steps: number): number {
     return sector;
 }
 
-export function getDistance({ x, y, sx, sy }: MousePos): number {
-    const dx = x - sx;
-    const dy = y - sy;
+export function getDistance({ dx, dy }: Delta): number {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -54,4 +49,19 @@ export function calculatePositions(radius: number, steps: number): number[] {
     }
 
     return positions;
+}
+
+export function getDelta(startX: number, startY: number, endX: number, endY: number): Delta {
+    return new Delta(endX - startX, endY - startY);
+}
+
+export function calculateRadius(steps: number): number {
+    const base = 102;
+    const perStep = 6;
+    let radius = base + perStep * steps;
+
+    if (steps > 8)
+        radius += (steps - 8) * 4;
+
+    return radius;
 }

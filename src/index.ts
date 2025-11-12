@@ -1,84 +1,86 @@
 import { Command, CommandMap, WolfMenuEvents } from "./types";
-import { getDirection, getDistance } from "./utils";
+import { Delta, getDelta, getDirection, getDistance } from "./utils";
 import { WolfMenuBody } from "./html";
 import { VEE } from "@wxn0brp/event-emitter";
 
 export class WolfMenu {
     constructor(
         public _commands: CommandMap,
-        public _element: HTMLDivElement
+        public _element: HTMLDivElement,
     ) {
         const items = document.createElement("div");
         items.classList.add("wolf-menu-items");
         this._element.appendChild(items);
-        this._body = new WolfMenuBody(items);
+        this.body = new WolfMenuBody(items);
         this._element.style.display = "none";
     }
 
-    _body: WolfMenuBody;
     _x = 0;
     _y = 0;
     _lastX = 0;
     _lastY = 0;
     _active = false;
-    _cancelCommand: Command = {
-        name: "Cancel",
-        action: () => this._element.style.display = "none"
-    }
     _selectedCommands: Command[];
     _logFn = console.log;
+    _cancelCommand: Command = { name: "Cancel", action: () => { } };
+
+    body: WolfMenuBody;
     emitter = new VEE<WolfMenuEvents>();
     distanceAccept = true;
-
+    distanceCount = 60;
     startCommand = "start";
+
     init() {
+        this._initMove();
+        this._initClick();
+        this.emitter.emit("initialized");
+    }
+
+    _initMove() {
         document.addEventListener("mousemove", (e) => {
             this._x = e.clientX;
             this._y = e.clientY;
             if (!this._active) return;
 
-            this._body.clearSelected();
-            const direction = this.getDirection();
-            this._body.select(direction);
+            this.body.clearSelected();
+            const delta = getDelta(this._lastX, this._lastY, this._x, this._y);
 
-            const distance = getDistance({
-                x: this._x,
-                y: this._y,
-                sx: this._lastX,
-                sy: this._lastY
-            });
+            const direction = getDirection(delta, this._selectedCommands.length);
+            this.body.select(direction);
 
+            const distance = getDistance(delta);
             this.emitter.emit("distance", distance, direction);
 
             if (!this.distanceAccept) return;
-            if (distance > this._element.clientWidth)
-                this.__open();
+            if (distance > this.body._actualRadius + this.distanceCount)
+                this._selected();
         });
-
-        document.addEventListener("click", () => {
-            if (this._active) this.__open();
-            else this._open();
-        });
-
-        this.emitter.emit("initialized");
     }
 
-    _open(commandName: string = this.startCommand) {
+    _initClick() {
+        document.addEventListener("click", (e) => {
+            this._x = e.clientX;
+            this._y = e.clientY;
+            if (this._active) this._selected();
+            else this._openMenu();
+        });
+    }
+
+    _openMenu(commandName: string = this.startCommand) {
         this._selectedCommands = this._commands[commandName];
         if (!this._selectedCommands) return this._logFn(`Command "${commandName}" not found!`);
         this._element.style.display = "";
         this._element.style.top = this._y + "px";
         this._element.style.left = this._x + "px";
-        this._body.genBody(this._selectedCommands.length);
-        this._body.setNames(this._selectedCommands, this._cancelCommand);
+        this.body.genBody(this._selectedCommands, this._cancelCommand);
         this._active = true;
         this._setStart();
-        this._body.select(this.getDirection());
+        this.body.select(this.getDirection());
 
         this.emitter.emit("menuOpened", commandName);
     }
 
-    __open() {
+    _selected() {
         this._element.style.display = "none";
         this._active = false;
         const direction = this.getDirection();
@@ -90,7 +92,7 @@ export class WolfMenu {
         this.emitter.emit("commandSelected", command);
 
         if ("go" in command) {
-            this._open(command.go);
+            this._openMenu(command.go);
             return
         }
         if ("action" in command) {
@@ -101,13 +103,9 @@ export class WolfMenu {
             this._logFn("Unknown command type", command);
     }
 
-    getDirection() {
-        return getDirection({
-            x: this._x,
-            y: this._y,
-            sx: this._lastX,
-            sy: this._lastY
-        }, this._selectedCommands.length);
+    getDirection(delta?: Delta): number {
+        if (!delta) delta = getDelta(this._lastX, this._lastY, this._x, this._y);
+        return getDirection(delta, this._selectedCommands.length);
     }
 
     _setStart(x = this._x, y = this._y) {
@@ -116,6 +114,6 @@ export class WolfMenu {
     }
 
     setRadius(radius: number) {
-        this._body.radius = radius;
+        this.body.radius = radius;
     }
 }

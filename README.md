@@ -2,6 +2,8 @@
 
 A radial context menu library that appears with a click and allows direction-based command selection. This project implements a dynamic, 8-directional menu system that can be integrated into web applications.
 
+[**DEMO**](https://wxn0brp.github.io/plasma-wolf/)
+
 ## Features
 
 - **Radial Menu Interface**: Commands are arranged in directions around a center point

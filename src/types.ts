@@ -21,10 +21,3 @@ export type WolfMenuEvents = {
     initialized: () => void;
     distance: (distance: number, direction: number) => void;
 }
-
-export interface MousePos {
-    x: number;
-    y: number;
-    sx: number;
-    sy: number;
-}
