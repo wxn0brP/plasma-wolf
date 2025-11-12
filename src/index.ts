@@ -17,8 +17,8 @@ export class WolfMenu {
 
     _x = 0;
     _y = 0;
-    _lastX = 0;
-    _lastY = 0;
+    _startX = 0;
+    _startY = 0;
     _active = false;
     _selectedCommands: Command[];
     _logFn = console.log;
@@ -43,7 +43,7 @@ export class WolfMenu {
             if (!this._active) return;
 
             this.body.clearSelected();
-            const delta = getDelta(this._lastX, this._lastY, this._x, this._y);
+            const delta = getDelta(this._startX, this._startY, this._x, this._y);
 
             const direction = getDirection(delta, this._selectedCommands.length);
             this.body.select(direction);
@@ -104,13 +104,13 @@ export class WolfMenu {
     }
 
     getDirection(delta?: Delta): number {
-        if (!delta) delta = getDelta(this._lastX, this._lastY, this._x, this._y);
+        if (!delta) delta = getDelta(this._startX, this._startY, this._x, this._y);
         return getDirection(delta, this._selectedCommands.length);
     }
 
     _setStart(x = this._x, y = this._y) {
-        this._lastX = x;
-        this._lastY = y;
+        this._startX = x;
+        this._startY = y;
     }
 
     setRadius(radius: number) {

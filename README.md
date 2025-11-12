@@ -7,29 +7,19 @@ A radial context menu library that appears with a click and allows direction-bas
 ## Features
 
 - **Radial Menu Interface**: Commands are arranged in directions around a center point
-- **Direction-Based Navigation**: Move your mouse in a specific direction to highlight commands
+- **Direction-Based Navigation**: Move your mouse in a specific direction to select commands
 - **Context-Aware Menus**: Different menu states with different available commands
 - **Flexible Command System**: Support for both action commands and navigation commands
-
-## How It Works
-
-The Plasma Wolf menu appears when triggered at a specific location on the screen. After activation:
-
-1. The menu appears at the specified location
-2. Move your mouse in a direction to highlight a command
-3. Click to execute the highlighted command
-4. The menu disappears and the selected action is performed
-
-Commands can either trigger an action (like executing a function) or navigate to a different context menu.
 
 ## Installation
 
 ```bash
-git clone https://github.com/wxn0brP/plasma-wolf.git
-cd plasma-wolf
-bun install
-suglite
+npm i @wxn0brp/plasma-wolf
 ```
+
+## API Documentation
+
+Check out [API documentation](https://github.com/wxn0brP/plasma-wolf/blob/master/API.md).
 
 ## Architecture
 
