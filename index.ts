@@ -8,10 +8,6 @@ export const commands: CommandMap = {
         { name: "Enter the castle", go: "castle" },
         { name: "Return to the village", go: "village" },
         { name: "Explore the cave", go: "cave" },
-        { name: "Take a look around", action: () => alert("Take a look around... it's pretty quiet.") },
-        { name: "Start again", action: () => alert("Let's start again from the beginning.") },
-        { name: "Check your inventory", action: () => alert("Make sure you have only your map and a flashlight.") },
-        { name: "Finish", action: () => alert("You're done! Congratulations on finishing the adventure!") },
     ],
     forest: [
         { name: "Gather berries", action: () => alert("You gathered some delicious berries.") },
@@ -27,7 +23,6 @@ export const commands: CommandMap = {
         { name: "Enter the throne room", go: "throne_room" },
         { name: "Talk to the guard", action: () => alert("The guard says: 'You cannot pass without permission.'") },
         { name: "Explore the garden", action: () => alert("The garden is empty and quiet.") },
-        { name: "Enter the armory", go: "armory" },
         { name: "Enter the dungeon", go: "dungeon" },
         { name: "Return to the start", go: "start" },
         { name: "Visit the library", go: "library" },
@@ -35,9 +30,7 @@ export const commands: CommandMap = {
     ],
     village: [
         { name: "Talk to the blacksmith", action: () => alert("Blacksmith: 'How can I help you with the new month?'") },
-        { name: "Enter the tavern", go: "tavern" },
         { name: "Visit the shopkeeper", action: () => alert("Shopkeeper: 'Welcome to my humble shop.'") },
-        { name: "Talk to the children", action: () => alert("Children: 'We're so happy to see you!'") },
         { name: "Feed the beggar", action: () => alert("The beggar thanks you for the food.") },
         { name: "Return to the start", go: "start" },
         { name: "Get a drink", action: () => alert("You take a refreshing drink.") },
@@ -58,3 +51,10 @@ export const commands: CommandMap = {
 const wolf = qs(".wolf");
 const menu = new WolfMenu(commands, wolf);
 menu.init();
+menu.distanceAccept = false;
+
+menu.emitter.on("distance", (distance: number) => {
+    const maxDistance = wolf.clientWidth - 10;
+    const percent = Math.min(1, distance / maxDistance);
+    wolf.style.setProperty("--alpha", percent.toString());
+});

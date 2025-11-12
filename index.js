@@ -1,51 +1,79 @@
-// src/direction.ts
-function getDirection(x, y, startX, startY) {
-  const dx = x - startX;
-  const dy = y - startY;
+// src/utils.ts
+function getDirection({ x, y, sx, sy }, steps, threshold = 55) {
+  const dx = x - sx;
+  const dy = y - sy;
   if (dx === 0 && dy === 0)
-    return 8;
+    return steps;
   const absDx = Math.abs(dx);
   const absDy = Math.abs(dy);
-  const threshold = 0.6;
-  if (absDx < 40 && absDy < 40)
-    return 8;
-  if (absDx > absDy * (1 + threshold)) {
-    return dx > 0 ? 2 : 6;
-  } else if (absDy > absDx * (1 + threshold)) {
-    return dy > 0 ? 4 : 0;
-  } else {
-    if (dx > 0 && dy < 0)
-      return 1;
-    if (dx > 0 && dy > 0)
-      return 3;
-    if (dx < 0 && dy > 0)
-      return 5;
-    if (dx < 0 && dy < 0)
-      return 7;
+  if (absDx < threshold && absDy < threshold)
+    return steps;
+  const angle = getAngle({ x, y, sx, sy });
+  const correction = 360 / steps / 2;
+  const adjustedAngle = angle + 90 + correction;
+  return getSector(adjustedAngle, steps);
+}
+function getAngle({ x, y, sx, sy }) {
+  const deltaX = x - sx;
+  const deltaY = y - sy;
+  let angle = Math.atan2(deltaY, deltaX);
+  angle = angle * (180 / Math.PI);
+  if (angle < 0)
+    angle += 360;
+  return angle;
+}
+function getSector(angle, steps) {
+  const sectorSize = 360 / steps;
+  let sector = Math.floor(angle / sectorSize);
+  sector = sector % steps;
+  return sector;
+}
+function getDistance({ x, y, sx, sy }) {
+  const dx = x - sx;
+  const dy = y - sy;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+function calculatePositions(radius, steps) {
+  const positions = [];
+  const angleStep = 2 * Math.PI / steps;
+  for (let i = 0;i < steps; i++) {
+    const angle = i * angleStep - Math.PI / 2;
+    const x = radius * Math.cos(angle);
+    const y = radius * Math.sin(angle);
+    positions.push(Math.round(x), Math.round(y));
   }
-  return 8;
+  return positions;
 }
 
 // src/html.ts
-var order = [7, 0, 1, 6, 8, 2, 5, 4, 3];
-
 class WolfMenuBody {
   parent;
-  constructor(parent) {
+  radius;
+  constructor(parent, radius = 150) {
     this.parent = parent;
+    this.radius = radius;
     this.parent.innerHTML = "";
-    this.body = this._genBody();
   }
-  body;
-  _genBody() {
-    const out = [];
-    for (let i = 0;i < order.length; i++) {
-      const outIndex = order[i];
-      const div = document.createElement("div");
-      this.parent.appendChild(div);
-      out[outIndex] = div;
+  body = [];
+  genBody(steps) {
+    this.parent.innerHTML = "";
+    this.body = [];
+    const positions = calculatePositions(this.radius, steps);
+    for (let i = 0;i < steps; i++) {
+      const div2 = document.createElement("div");
+      div2.classList.add("wolf-menu-item");
+      div2.style.left = `${positions[i * 2]}px`;
+      div2.style.top = `${positions[i * 2 + 1]}px`;
+      this.parent.appendChild(div2);
+      this.body.push(div2);
     }
-    return out;
+    const div = document.createElement("div");
+    div.classList.add("wolf-menu-item");
+    div.classList.add("wolf-menu-item-cancel");
+    div.style.left = "0";
+    div.style.top = "0";
+    this.parent.appendChild(div);
+    this.body.push(div);
   }
   clearSelected() {
     this.body.forEach((div) => div.classList.remove("selected"));
@@ -64,6 +92,41 @@ class WolfMenuBody {
   }
 }
 
+// node_modules/@wxn0brp/event-emitter/dist/index.js
+class VEE {
+  _events = {};
+  on(event, listener) {
+    const _event = event;
+    if (!this._events[_event])
+      this._events[_event] = [];
+    this._events[_event].push(listener);
+  }
+  once(event, listener) {
+    const onceListener = (...args) => {
+      this.off(event, onceListener);
+      listener(...args);
+    };
+    this.on(event, onceListener);
+  }
+  off(event, listener) {
+    const _event = event;
+    if (!this._events[_event])
+      return;
+    this._events[_event] = this._events[_event].filter((l) => l !== listener);
+  }
+  emit(event, ...args) {
+    const listeners = this._events[event];
+    if (listeners && listeners.length > 0) {
+      listeners.forEach((listener) => {
+        listener(...args);
+      });
+    }
+  }
+  listenerCount(event) {
+    return this._events[event]?.length || 0;
+  }
+}
+
 // src/index.ts
 class WolfMenu {
   _commands;
@@ -71,7 +134,10 @@ class WolfMenu {
   constructor(_commands, _element) {
     this._commands = _commands;
     this._element = _element;
-    this._body = new WolfMenuBody(this._element);
+    const items = document.createElement("div");
+    items.classList.add("wolf-menu-items");
+    this._element.appendChild(items);
+    this._body = new WolfMenuBody(items);
     this._element.style.display = "none";
   }
   _body;
@@ -86,6 +152,8 @@ class WolfMenu {
   };
   _selectedCommands;
   _logFn = console.log;
+  emitter = new VEE;
+  distanceAccept = true;
   startCommand = "start";
   init() {
     document.addEventListener("mousemove", (e) => {
@@ -94,7 +162,19 @@ class WolfMenu {
       if (!this._active)
         return;
       this._body.clearSelected();
-      this._body.select(this.getDirection());
+      const direction = this.getDirection();
+      this._body.select(direction);
+      const distance = getDistance({
+        x: this._x,
+        y: this._y,
+        sx: this._lastX,
+        sy: this._lastY
+      });
+      this.emitter.emit("distance", distance, direction);
+      if (!this.distanceAccept)
+        return;
+      if (distance > this._element.clientWidth)
+        this.__open();
     });
     document.addEventListener("click", () => {
       if (this._active)
@@ -102,40 +182,55 @@ class WolfMenu {
       else
         this._open();
     });
+    this.emitter.emit("initialized");
   }
   _open(commandName = this.startCommand) {
     this._selectedCommands = this._commands[commandName];
+    if (!this._selectedCommands)
+      return this._logFn(`Command "${commandName}" not found!`);
     this._element.style.display = "";
     this._element.style.top = this._y + "px";
     this._element.style.left = this._x + "px";
-    this._body.clearSelected();
+    this._body.genBody(this._selectedCommands.length);
     this._body.setNames(this._selectedCommands, this._cancelCommand);
     this._active = true;
     this._setStart();
     this._body.select(this.getDirection());
+    this.emitter.emit("menuOpened", commandName);
   }
   __open() {
     this._element.style.display = "none";
     this._active = false;
     const direction = this.getDirection();
-    const command = direction === 8 ? this._cancelCommand : this._selectedCommands[direction];
+    const command = direction > this._selectedCommands.length ? this._cancelCommand : this._selectedCommands[direction];
+    this.emitter.emit("menuClosed");
     if (!command)
       return;
+    this.emitter.emit("commandSelected", command);
     if ("go" in command) {
       this._open(command.go);
       return;
     }
-    if ("action" in command)
+    if ("action" in command) {
       command.action();
-    else
+      this.emitter.emit("commandExecuted", command);
+    } else
       this._logFn("Unknown command type", command);
   }
   getDirection() {
-    return getDirection(this._x, this._y, this._lastX, this._lastY);
+    return getDirection({
+      x: this._x,
+      y: this._y,
+      sx: this._lastX,
+      sy: this._lastY
+    }, this._selectedCommands.length);
   }
   _setStart(x = this._x, y = this._y) {
     this._lastX = x;
     this._lastY = y;
+  }
+  setRadius(radius) {
+    this._body.radius = radius;
   }
 }
 
@@ -225,11 +320,7 @@ var commands = {
     { name: "Go to the forest", go: "forest" },
     { name: "Enter the castle", go: "castle" },
     { name: "Return to the village", go: "village" },
-    { name: "Explore the cave", go: "cave" },
-    { name: "Take a look around", action: () => alert("Take a look around... it's pretty quiet.") },
-    { name: "Start again", action: () => alert("Let's start again from the beginning.") },
-    { name: "Check your inventory", action: () => alert("Make sure you have only your map and a flashlight.") },
-    { name: "Finish", action: () => alert("You're done! Congratulations on finishing the adventure!") }
+    { name: "Explore the cave", go: "cave" }
   ],
   forest: [
     { name: "Gather berries", action: () => alert("You gathered some delicious berries.") },
@@ -245,7 +336,6 @@ var commands = {
     { name: "Enter the throne room", go: "throne_room" },
     { name: "Talk to the guard", action: () => alert("The guard says: 'You cannot pass without permission.'") },
     { name: "Explore the garden", action: () => alert("The garden is empty and quiet.") },
-    { name: "Enter the armory", go: "armory" },
     { name: "Enter the dungeon", go: "dungeon" },
     { name: "Return to the start", go: "start" },
     { name: "Visit the library", go: "library" },
@@ -253,9 +343,7 @@ var commands = {
   ],
   village: [
     { name: "Talk to the blacksmith", action: () => alert("Blacksmith: 'How can I help you with the new month?'") },
-    { name: "Enter the tavern", go: "tavern" },
     { name: "Visit the shopkeeper", action: () => alert("Shopkeeper: 'Welcome to my humble shop.'") },
-    { name: "Talk to the children", action: () => alert("Children: 'We're so happy to see you!'") },
     { name: "Feed the beggar", action: () => alert("The beggar thanks you for the food.") },
     { name: "Return to the start", go: "start" },
     { name: "Get a drink", action: () => alert("You take a refreshing drink.") },
@@ -275,6 +363,15 @@ var commands = {
 var wolf = qs(".wolf");
 var menu = new WolfMenu(commands, wolf);
 menu.init();
+menu.distanceAccept = false;
+menu.emitter.on("distance", (distance) => {
+  const maxDistance = wolf.clientWidth - 10;
+  const percent = Math.min(1, distance / maxDistance);
+  wolf.style.setProperty("--alpha", percent.toString());
+});
 export {
   commands
 };
+
+//# debugId=DC0EA896254D8F0B64756E2164756E21
+//# sourceMappingURL=index.js.map
