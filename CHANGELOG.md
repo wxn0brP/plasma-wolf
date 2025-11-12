@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.4...v0.0.5) (2025-11-12)
+
+
+### Features
+
+* update ([a34e0b9](https://github.com/wxn0brP/plasma-wolf/commit/a34e0b90d04ec28a4417a730bd7cff290550cb30))
+* update ([71b104c](https://github.com/wxn0brP/plasma-wolf/commit/71b104cd6bf56cd5a062d4e66e8c914f75d7d228))
+
 ### [0.0.4](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.3...v0.0.4) (2025-11-11)
 
 
