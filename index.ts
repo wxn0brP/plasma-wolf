@@ -51,10 +51,9 @@ export const commands: CommandMap = {
 const wolf = qs(".wolf");
 const menu = new WolfMenu(commands, wolf);
 menu.init();
-menu.distanceAccept = false;
 
 menu.emitter.on("distance", (distance: number) => {
-    const maxDistance = wolf.clientWidth - 10;
+    const maxDistance = menu.body._actualRadius + menu.distanceCount;
     const percent = Math.min(1, distance / maxDistance);
     wolf.style.setProperty("--alpha", percent.toString());
 });

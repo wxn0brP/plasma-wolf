@@ -1,22 +1,27 @@
 // src/utils.ts
-function getDirection({ x, y, sx, sy }, steps, threshold = 55) {
-  const dx = x - sx;
-  const dy = y - sy;
+class Delta {
+  dx;
+  dy;
+  constructor(dx, dy) {
+    this.dx = dx;
+    this.dy = dy;
+  }
+}
+function getDirection(delta, steps, threshold = 55) {
+  const { dx, dy } = delta;
   if (dx === 0 && dy === 0)
     return steps;
   const absDx = Math.abs(dx);
   const absDy = Math.abs(dy);
   if (absDx < threshold && absDy < threshold)
     return steps;
-  const angle = getAngle({ x, y, sx, sy });
+  const angle = getAngle(delta);
   const correction = 360 / steps / 2;
   const adjustedAngle = angle + 90 + correction;
   return getSector(adjustedAngle, steps);
 }
-function getAngle({ x, y, sx, sy }) {
-  const deltaX = x - sx;
-  const deltaY = y - sy;
-  let angle = Math.atan2(deltaY, deltaX);
+function getAngle(delta) {
+  let angle = Math.atan2(delta.dy, delta.dx);
   angle = angle * (180 / Math.PI);
   if (angle < 0)
     angle += 360;
@@ -28,9 +33,7 @@ function getSector(angle, steps) {
   sector = sector % steps;
   return sector;
 }
-function getDistance({ x, y, sx, sy }) {
-  const dx = x - sx;
-  const dy = y - sy;
+function getDistance({ dx, dy }) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 function calculatePositions(radius, steps) {
@@ -44,26 +47,41 @@ function calculatePositions(radius, steps) {
   }
   return positions;
 }
+function getDelta(startX, startY, endX, endY) {
+  return new Delta(endX - startX, endY - startY);
+}
+function calculateRadius(steps) {
+  const base = 102;
+  const perStep = 6;
+  let radius = base + perStep * steps;
+  if (steps > 8)
+    radius += (steps - 8) * 4;
+  return radius;
+}
 
 // src/html.ts
 class WolfMenuBody {
   parent;
   radius;
-  constructor(parent, radius = 150) {
+  constructor(parent, radius = 0) {
     this.parent = parent;
     this.radius = radius;
     this.parent.innerHTML = "";
+    this._actualRadius = radius;
   }
   body = [];
-  genBody(steps) {
+  selectedClass = "selected";
+  _actualRadius;
+  genBody(commands, cancelCommand) {
     this.parent.innerHTML = "";
     this.body = [];
-    const positions = calculatePositions(this.radius, steps);
-    for (let i = 0;i < steps; i++) {
+    const positions = calculatePositions(this._getRadius(commands.length), commands.length);
+    for (let i = 0;i < commands.length; i++) {
       const div2 = document.createElement("div");
       div2.classList.add("wolf-menu-item");
       div2.style.left = `${positions[i * 2]}px`;
       div2.style.top = `${positions[i * 2 + 1]}px`;
+      div2.innerHTML = commands[i].name;
       this.parent.appendChild(div2);
       this.body.push(div2);
     }
@@ -72,23 +90,22 @@ class WolfMenuBody {
     div.classList.add("wolf-menu-item-cancel");
     div.style.left = "0";
     div.style.top = "0";
+    div.innerHTML = cancelCommand.name;
     this.parent.appendChild(div);
     this.body.push(div);
   }
+  _getRadius(steps) {
+    if (this.radius === 0)
+      this._actualRadius = calculateRadius(steps);
+    else
+      this._actualRadius = this.radius;
+    return this._actualRadius;
+  }
   clearSelected() {
-    this.body.forEach((div) => div.classList.remove("selected"));
+    this.body.forEach((div) => div.classList.remove(this.selectedClass));
   }
   select(i) {
-    this.body[i].classList.add("selected");
-  }
-  setNames(commands, cancelCommand) {
-    const arr = [
-      ...commands,
-      cancelCommand
-    ];
-    arr.forEach((command, index) => {
-      this.body[index].innerHTML = command.name;
-    });
+    this.body[i].classList.add(this.selectedClass);
   }
 }
 
@@ -137,68 +154,69 @@ class WolfMenu {
     const items = document.createElement("div");
     items.classList.add("wolf-menu-items");
     this._element.appendChild(items);
-    this._body = new WolfMenuBody(items);
+    this.body = new WolfMenuBody(items);
     this._element.style.display = "none";
   }
-  _body;
   _x = 0;
   _y = 0;
-  _lastX = 0;
-  _lastY = 0;
+  _startX = 0;
+  _startY = 0;
   _active = false;
-  _cancelCommand = {
-    name: "Cancel",
-    action: () => this._element.style.display = "none"
-  };
   _selectedCommands;
   _logFn = console.log;
+  _cancelCommand = { name: "Cancel", action: () => {} };
+  body;
   emitter = new VEE;
   distanceAccept = true;
+  distanceCount = 60;
   startCommand = "start";
   init() {
+    this._initMove();
+    this._initClick();
+    this.emitter.emit("initialized");
+  }
+  _initMove() {
     document.addEventListener("mousemove", (e) => {
       this._x = e.clientX;
       this._y = e.clientY;
       if (!this._active)
         return;
-      this._body.clearSelected();
-      const direction = this.getDirection();
-      this._body.select(direction);
-      const distance = getDistance({
-        x: this._x,
-        y: this._y,
-        sx: this._lastX,
-        sy: this._lastY
-      });
+      this.body.clearSelected();
+      const delta = getDelta(this._startX, this._startY, this._x, this._y);
+      const direction = getDirection(delta, this._selectedCommands.length);
+      this.body.select(direction);
+      const distance = getDistance(delta);
       this.emitter.emit("distance", distance, direction);
       if (!this.distanceAccept)
         return;
-      if (distance > this._element.clientWidth)
-        this.__open();
+      if (distance > this.body._actualRadius + this.distanceCount)
+        this._selected();
     });
-    document.addEventListener("click", () => {
-      if (this._active)
-        this.__open();
-      else
-        this._open();
-    });
-    this.emitter.emit("initialized");
   }
-  _open(commandName = this.startCommand) {
+  _initClick() {
+    document.addEventListener("click", (e) => {
+      this._x = e.clientX;
+      this._y = e.clientY;
+      if (this._active)
+        this._selected();
+      else
+        this._openMenu();
+    });
+  }
+  _openMenu(commandName = this.startCommand) {
     this._selectedCommands = this._commands[commandName];
     if (!this._selectedCommands)
       return this._logFn(`Command "${commandName}" not found!`);
     this._element.style.display = "";
     this._element.style.top = this._y + "px";
     this._element.style.left = this._x + "px";
-    this._body.genBody(this._selectedCommands.length);
-    this._body.setNames(this._selectedCommands, this._cancelCommand);
+    this.body.genBody(this._selectedCommands, this._cancelCommand);
     this._active = true;
     this._setStart();
-    this._body.select(this.getDirection());
+    this.body.select(this.getDirection());
     this.emitter.emit("menuOpened", commandName);
   }
-  __open() {
+  _selected() {
     this._element.style.display = "none";
     this._active = false;
     const direction = this.getDirection();
@@ -208,7 +226,7 @@ class WolfMenu {
       return;
     this.emitter.emit("commandSelected", command);
     if ("go" in command) {
-      this._open(command.go);
+      this._openMenu(command.go);
       return;
     }
     if ("action" in command) {
@@ -217,20 +235,17 @@ class WolfMenu {
     } else
       this._logFn("Unknown command type", command);
   }
-  getDirection() {
-    return getDirection({
-      x: this._x,
-      y: this._y,
-      sx: this._lastX,
-      sy: this._lastY
-    }, this._selectedCommands.length);
+  getDirection(delta) {
+    if (!delta)
+      delta = getDelta(this._startX, this._startY, this._x, this._y);
+    return getDirection(delta, this._selectedCommands.length);
   }
   _setStart(x = this._x, y = this._y) {
-    this._lastX = x;
-    this._lastY = y;
+    this._startX = x;
+    this._startY = y;
   }
   setRadius(radius) {
-    this._body.radius = radius;
+    this.body.radius = radius;
   }
 }
 
@@ -363,9 +378,8 @@ var commands = {
 var wolf = qs(".wolf");
 var menu = new WolfMenu(commands, wolf);
 menu.init();
-menu.distanceAccept = false;
 menu.emitter.on("distance", (distance) => {
-  const maxDistance = wolf.clientWidth - 10;
+  const maxDistance = menu.body._actualRadius + menu.distanceCount;
   const percent = Math.min(1, distance / maxDistance);
   wolf.style.setProperty("--alpha", percent.toString());
 });
@@ -373,5 +387,5 @@ export {
   commands
 };
 
-//# debugId=DC0EA896254D8F0B64756E2164756E21
+//# debugId=BCF392311915E70664756E2164756E21
 //# sourceMappingURL=index.js.map
