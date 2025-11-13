@@ -1,18 +1,19 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - "src/**"
-      - "public/**"
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
 
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-demo:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -29,8 +30,10 @@ jobs:
           bun install
           bun run build-public
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
+          destination_dir: demo
+          keep_files: true
