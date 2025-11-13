@@ -2,7 +2,9 @@
 
 A radial context menu library that appears with a click and allows direction-based command selection. This project implements a dynamic, 8-directional menu system that can be integrated into web applications.
 
-[**DEMO**](https://wxn0brp.github.io/plasma-wolf/)
+[**DEMO**](https://wxn0brp.github.io/plasma-wolf/demo)
+|
+[**Documentation**](https://github.com/wxn0brP/plasma-wolf) (auto generated)
 
 ## Features
 
@@ -17,7 +19,7 @@ A radial context menu library that appears with a click and allows direction-bas
 npm i @wxn0brp/plasma-wolf
 ```
 
-## API Documentation
+## API Documentation (Manually, older but better)
 
 Check out [API documentation](https://github.com/wxn0brP/plasma-wolf/blob/master/API.md).
 
