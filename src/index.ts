@@ -116,4 +116,8 @@ export class WolfMenu {
     setRadius(radius: number) {
         this.body.radius = radius;
     }
+
+    go(commandName: string) {
+        this._openMenu(commandName);
+    }
 }
