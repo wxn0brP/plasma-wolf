@@ -1,5 +1,10 @@
+:root {
+    --accent: indigo;
+    --back: #111;
+}
+
 body {
-    background-color: #111;
+    background-color: var(--back);
     color: white;
 }
 
@@ -39,7 +44,7 @@ body {
 }
 
 .wolf-menu-item.selected {
-    color: rgba(128, 0, 255, var(--alpha, 0));
+    color: var(--color);
 }
 
 .wolf-menu-item.wolf-menu-item-cancel.selected {
