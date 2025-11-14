@@ -13,7 +13,7 @@ if (!lang) {
     const data = await prompt(`
 Instruction to use your own lang.
 1. Open <a href="${link}" target="_blank">${link}</a>
-2. Translate the text in the file (e.g. Use AI to translate)
+2. Translate the text. Use e.g. Use AI to translate
 3. Paste the result here
 `.trim().replaceAll("\n", "<br>"));
     if (data) {
