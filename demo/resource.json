@@ -1,0 +1,91 @@
+{
+    "c": {
+        "start": [
+            "Go to the forest",
+            "Enter the castle",
+            "Return to the village",
+            "Explore the cave"
+        ],
+        "forest": [
+            "Gather berries",
+            "Search for useful items",
+            "Find a stream",
+            "Go deeper in the forest",
+            "Return to the start"
+        ],
+        "deep_forest": [
+            "Investigate strange sounds",
+            "Look for herbs",
+            "Return to forest edge"
+        ],
+        "castle": [
+            "Enter the throne room",
+            "Talk to the guard",
+            "Explore the garden",
+            "Enter the dungeon",
+            "Return to the start"
+        ],
+        "throne_room": [
+            "Approach the throne",
+            "Examine the treasure chest",
+            "Return to castle entrance"
+        ],
+        "dungeon": [
+            "Search the cells",
+            "Listen for voices",
+            "Return upstairs"
+        ],
+        "village": [
+            "Talk to the blacksmith",
+            "Visit the shopkeeper",
+            "Help the beggar",
+            "Return to the start"
+        ],
+        "cave": [
+            "Go deeper",
+            "Search near entrance",
+            "Light a match",
+            "Return to the start"
+        ],
+        "deep_cave": [
+            "Explore the left tunnel",
+            "Explore the right tunnel",
+            "Return to cave entrance"
+        ]
+    },
+    "m": {
+        "gatherBerries": "You gathered some delicious berries. They look tasty!",
+        "findStream": "You found a stream with cool, clear water. You take a drink.",
+        "searchForestFound": "You found an old but usable torch! This will help in dark places.",
+        "searchForestNotFound": "You search the area but find nothing of interest.",
+        "lookForHerbs": "You find some medicinal herbs that might be useful.",
+        "exploreGarden": "The garden is beautiful but empty. You notice a small key hidden under a bench!",
+        "listenToVoices": "You hear faint whispers but can't make out the words.",
+        "talkToShopkeeper": "Shopkeeper: 'Welcome! I have various goods for sale.'",
+        "encounterWolfWithSword": "With your sword, you bravely defeat the wolf! The forest is safe now.",
+        "encounterWolfWithoutSword": "A fierce wolf appears! You need a weapon to face it. You retreat quickly.",
+        "examineWolfsDen": "In the den you find a small treasure! Your adventure is complete!",
+        "talkToGuardNotBribed": "Guard: 'Halt! None may pass without the king's permission... though I might be persuaded for some berries.'",
+        "talkToGuardBribed": "Guard: 'Welcome back, friend. The throne room awaits.'",
+        "talkToBlacksmithNoSword": "Blacksmith: 'Ah, a brave adventurer! Take this sword - it might help you on your journey.'",
+        "talkToBlacksmithWithSword": "Blacksmith: 'That sword looks good on you! Come back if you need it sharpened.'",
+        "helpBeggar": "Beggar: 'Thank you for your kindness! I heard the castle guard has a weakness for forest berries...'",
+        "bribeGuard": "The guard happily accepts the berries and lets you pass to the throne room!",
+        "approachThroneAuthorized": "You approach the empty throne. On it rests a royal decree granting you hero status!",
+        "approachThroneUnauthorized": "The guard stops you: 'I cannot let you approach the throne without proper authorization!'",
+        "examineChestWithKey": "You unlock the chest with your key and find legendary treasure! You win!",
+        "examineChestWithoutKey": "The treasure chest is securely locked. You'll need a key to open it.",
+        "searchDungeonFound": "In a dusty corner, you find an old iron key! This might open something important.",
+        "searchDungeonNotFound": "The dungeon cells are empty and creepy. You don't want to stay here long.",
+        "searchCaveWithoutTorch": "It's too dark to see anything properly. You need a light source.",
+        "searchCaveWithTorch": "With your torch, you find ancient markings on the wall pointing to hidden tunnels.",
+        "exploreLeftTunnelWithTorch": "The left tunnel leads to a beautiful crystal cavern. The crystals glow in your torchlight.",
+        "exploreLeftTunnelWithoutTorch": "It's pitch black! You stumble in the darkness and decide to turn back.",
+        "exploreRightTunnel": "The right tunnel slopes downward and ends at an underground lake. The water seems to glow with a faint blue light.",
+        "lightMatchWithTorch": "Your torch illuminates the cave perfectly.",
+        "lightMatchWithoutTorch": "The match flickers and casts a small, warm glow, but quickly burns out."
+    },
+    "dynamicCommands": {
+        "bribeGuard": "Bribe guard with berries"
+    }
+}
