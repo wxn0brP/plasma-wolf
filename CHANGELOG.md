@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.5...v0.0.6) (2025-12-06)
+
+
+### Features
+
+* lang ([580be47](https://github.com/wxn0brP/plasma-wolf/commit/580be47b3507a8dbf84d1d95a6fdd8a779ba7d56))
+* menu.go ([9ef977c](https://github.com/wxn0brP/plasma-wolf/commit/9ef977cb7607a43b49f66460deb63679fa7942b2))
+* mini game ([a5a996e](https://github.com/wxn0brP/plasma-wolf/commit/a5a996e6d856ec4ed44bdb841ff7ceb93b5c15c7))
+* update ([c92321d](https://github.com/wxn0brP/plasma-wolf/commit/c92321d619e95d12dfd3d2482eb2e6650957da6d))
+
+
+### Bug Fixes
+
+* popup ([2d0c8b9](https://github.com/wxn0brP/plasma-wolf/commit/2d0c8b9f6f36d8a9b305a2f60db32eac74d98ef5))
+* popup ([eec383a](https://github.com/wxn0brP/plasma-wolf/commit/eec383a8acf42ca4860ae44b789a48747d0be799))
+
 ### [0.0.5](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.4...v0.0.5) (2025-11-12)
 
 
