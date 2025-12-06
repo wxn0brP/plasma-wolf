@@ -3,7 +3,7 @@
     "version": "0.0.5",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "description": "",
+    "description": "A radial context menu library",
     "repository": {
         "type": "git",
         "url": "https://github.com/wxn0brP/plasma-wolf.git"

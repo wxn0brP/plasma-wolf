@@ -1,6 +1,6 @@
 # Plasma Wolf
 
-A radial context menu library that appears with a click and allows direction-based command selection. This project implements a dynamic, 8-directional menu system that can be integrated into web applications.
+A radial context menu library that appears on click and enables command selection by pointing in a direction. The project implements a dynamic menu system with any number of segments, easily integrable into web applications.
 
 [**DEMO**](https://wxn0brp.github.io/plasma-wolf/demo)
 |
