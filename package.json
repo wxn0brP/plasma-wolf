@@ -22,7 +22,7 @@
     "devDependencies": {
         "@types/bun": "*",
         "@wxn0brp/flanker-dialog": "^0.0.5",
-        "@wxn0brp/flanker-ui": "^0.4.4",
+        "@wxn0brp/flanker-ui": "^0.5.0",
         "tsc-alias": "*",
         "typescript": "*"
     },
