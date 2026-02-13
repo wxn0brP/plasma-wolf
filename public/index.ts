@@ -201,6 +201,7 @@ function exploreRightTunnel() {
 const wolf = qs(".wolf");
 const menu = new WolfMenu(commands, wolf);
 menu.init();
+menu.emitter.on("*", (...args: any) => args[0] !== "distance" && console.log(...args));
 
 menu.emitter.on("distance", (distance: number) => {
     const maxDistance = menu.body._actualRadius + menu.distanceCount;

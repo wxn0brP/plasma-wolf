@@ -14,10 +14,10 @@
     "type": "module",
     "scripts": {
         "build": "tsc && tsc-alias",
-        "build-public": "bun build public/index.ts --outdir public --sourcemap --minify"
+        "build:public": "bun build public/index.ts --outdir public --sourcemap --minify"
     },
     "dependencies": {
-        "@wxn0brp/event-emitter": "^0.0.4"
+        "@wxn0brp/event-emitter": "0.0.5"
     },
     "devDependencies": {
         "@types/bun": "*",

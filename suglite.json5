@@ -1,0 +1,17 @@
+{
+	cmd: "bun run build && bun run build:public",
+	watch: [
+		"public/index.ts",
+		"src"
+	],
+	server: 14593,
+	server_map: {
+		dir: {
+			"/": "public"
+		}
+	},
+	restart_cmd: "clear",
+	events: {
+		rs: "clear"
+	}
+}

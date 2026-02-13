@@ -8,7 +8,7 @@
 
 ## Public API (Stable)
 
-### WolfMenu Class
+### WolfMenuCore Class
 
 #### Properties
 
@@ -16,12 +16,31 @@
 - `distanceAccept`: Boolean to control if distance-based command selection is enabled
 - `distanceCount`: Number of pixels required to trigger distance-based selection
 - `startCommand`: String representing the default command to start with
+- `threshold`: Threshold value for direction calculation
+- `_commands`: Map of commands (constructor parameter)
 
 #### Methods
 
 - `init()`: Initialize the menu event listeners
+- `handleMove(radius?: number)`: Handle mouse movement logic, returns an object with delta, direction, and distance
+- `openMenu(commandName: string)`: Open the menu with a specific command
+- `selected()`: Handle command selection
 - `getDirection(delta?: Delta)`: Get direction based on movement delta
+- `setStart(x: number, y: number)`: Set the starting coordinates
+- `go(commandName: string)`: Navigate to a command submenu
+
+### WolfMenu Class (Browser-specific extension of WolfMenuCore)
+
+#### Properties
+
+- `body`: Instance of WolfMenuBody for UI rendering
+- `_element`: HTMLDivElement element for the menu
+
+#### Methods
+
+- `init()`: Initialize the menu event listeners
 - `setRadius(radius: number)`: Set the radius of the menu
+- `handleMove()`: Handle mouse movement logic with UI updates, returns an object with delta, direction, and distance
 
 ### Utility Functions (in utils.ts)
 
@@ -44,23 +63,26 @@
 
 #### Properties
 
+- `parent`: HTMLElement that serves as the parent container
+- `body`: Array of HTMLDivElement elements for menu items
 - `selectedClass`: CSS class name for selected items
 - `radius`: Menu radius value
+- `_actualRadius`: Actual calculated radius
+- `blockOpen`: Boolean to control menu opening (document click listener)
 
 #### Methods
 
 - `genBody(commands: Command[], cancelCommand: Command)`: Generate the menu body with commands
 - `clearSelected()`: Clear the selected state from all items
 - `select(i: number)`: Select an item by index
+- `openMenu(commandName: string)`: Open the menu with a specific command (browser-specific)
 
 ## Private API (Unstable)
 
-### WolfMenu Class
+### WolfMenuCore Class
 
 #### Properties
 
-- `_commands`: Map of commands
-- `_element`: HTMLDivElement element for the menu
 - `_x`: Current X coordinate
 - `_y`: Current Y coordinate
 - `_startX`: Menu start X coordinate
@@ -72,21 +94,18 @@
 
 #### Methods
 
-- `_initMove()`: Initialize mouse movement listeners
-- `_initClick()`: Initialize click listeners
-- `_openMenu(commandName: string = this.startCommand)`: Open the menu with a specific command
-- `_selected()`: Handle command selection
-- `_setStart(x = this._x, y = this._y)`: Set the starting coordinates
+- `setStart(x = this._x, y = this._y)`: Set the starting coordinates with default values
 
-### WolfMenuBody Class
+### WolfMenu Class (Browser-specific)
 
 #### Properties
 
-- `_actualRadius`: Actual calculated radius
+- `_element`: HTMLDivElement element for the menu
 
 #### Methods
 
-- `_getRadius(steps: number)`: Get the calculated radius for a number of steps
+- `_initMove()`: Initialize mouse movement listeners
+- `_initClick()`: Initialize click listeners
 
 ### Utility Functions (in utils.ts)
 

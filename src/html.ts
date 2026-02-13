@@ -2,7 +2,7 @@ import { calculatePositions, calculateRadius } from "./utils";
 import { Command } from "./types";
 
 export class WolfMenuBody {
-    constructor(private parent: HTMLElement, public radius = 0) {
+    constructor(public parent: HTMLElement, public radius = 0) {
         this.parent.innerHTML = "";
         this._actualRadius = radius;
     }
@@ -50,6 +50,9 @@ export class WolfMenuBody {
     }
 
     select(i: number) {
+        if (!this.body[i]) return;
+
+        this.body.forEach(div => div.classList.remove(this.selectedClass));
         this.body[i].classList.add(this.selectedClass);
     }
 }

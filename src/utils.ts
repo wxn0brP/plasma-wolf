@@ -2,7 +2,7 @@ export class Delta {
     constructor(public dx: number, public dy: number) { }
 }
 
-export function getDirection(delta: Delta, steps: number, threshold = 55): number {
+export function getDirection(delta: Delta, steps: number, threshold: number): number {
     const { dx, dy } = delta;
     if (dx === 0 && dy === 0) return steps; // no movement
 
