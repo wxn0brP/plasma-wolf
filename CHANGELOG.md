@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.6...v0.1.0) (2026-02-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* update
+
+### Features
+
+* bump deps ([ddf74ad](https://github.com/wxn0brP/plasma-wolf/commit/ddf74ad4db3c513ed0763d81e14d67c6181773f2))
+* update ([4c6dc6b](https://github.com/wxn0brP/plasma-wolf/commit/4c6dc6b96f06a93e8531956f427e5b5149420065))
+
 ### [0.0.6](https://github.com/wxn0brP/plasma-wolf/compare/v0.0.5...v0.0.6) (2025-12-06)
 
 
