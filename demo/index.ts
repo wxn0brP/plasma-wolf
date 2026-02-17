@@ -1,6 +1,8 @@
-import { prompt, uiMsg } from "@wxn0brp/flanker-dialog";
-import "@wxn0brp/flanker-dialog/style.css";
 import "@wxn0brp/flanker-ui/html";
+
+import { uiMsg } from "@wxn0brp/flanker-dialog/msg/index";
+import { prompt } from "@wxn0brp/flanker-dialog/prompt/index";
+import "@wxn0brp/flanker-dialog/style.css";
 import { WolfMenu } from "../src/index";
 import { CommandMap } from "../src/types";
 
@@ -201,6 +203,7 @@ function exploreRightTunnel() {
 const wolf = qs(".wolf");
 const menu = new WolfMenu(commands, wolf);
 menu.init();
+menu.emitter.on("*", (...args: any) => args[0] !== "distance" && console.log(...args));
 
 menu.emitter.on("distance", (distance: number) => {
     const maxDistance = menu.body._actualRadius + menu.distanceCount;
