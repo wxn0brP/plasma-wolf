@@ -24,7 +24,7 @@
         "@wxn0brp/flanker-dialog": "~0.1.0",
         "@wxn0brp/flanker-ui": "~0.5.1",
         "tsc-alias": "*",
-        "typescript": "*"
+        "typescript": "^5"
     },
     "files": [
         "dist"
